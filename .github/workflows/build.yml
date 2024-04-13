@@ -33,6 +33,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.MY_TOKEN }}
           name: Release ${{ github.ref }}
           draft: false
           prerelease: false
