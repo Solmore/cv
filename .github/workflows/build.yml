@@ -1,0 +1,39 @@
+name: Build and deploy LaTeX document
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v3
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: cv.tex
+
+      - name: Upload pdf document
+        uses: actions/upload-artifact@v3
+        with:
+          name: cv
+          path: cv.pdf
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: [build]
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: cv
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          files: cv.pdf
